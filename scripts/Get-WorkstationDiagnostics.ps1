@@ -55,6 +55,11 @@ foreach ($Proc in $TopProcs) {
     $MemMB = [math]::Round($Proc.WorkingSet64 / 1MB, 1)
     $Report += "$($Proc.ProcessName) - $MemMB MB"
 }
+}
+$OutputDir = Split-Path -Path $OutputPath -Parent
+if (-not (Test-Path -Path $OutputDir)) {
+    New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
+}
 
 $Report | Out-File -FilePath $OutputPath -Encoding UTF8
 Write-Host "Diagnostic report saved to: $OutputPath" -ForegroundColor Green
