@@ -55,7 +55,6 @@ foreach ($Proc in $TopProcs) {
     $MemMB = [math]::Round($Proc.WorkingSet64 / 1MB, 1)
     $Report += "$($Proc.ProcessName) - $MemMB MB"
 }
-}
 $OutputDir = Split-Path -Path $OutputPath -Parent
 if (-not (Test-Path -Path $OutputDir)) {
     New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
