@@ -2,15 +2,17 @@
 .SYNOPSIS
     Collects Tier 1 system, network, and DNS diagnostic data for rapid triage and Tier 2 escalation.
 .DESCRIPTION
-    Gathers OS version, uptime, IPv4/Gateway/DNS settings, and tests connectivity to the local gateway,
-    external IP (8.8.8.8), and DNS resolution, exporting a timestamped report to the user's Desktop.
+    Gathers OS version, uptime, C: drive storage, IPv4/Gateway/DNS settings, and tests connectivity
+    to the local gateway, external IP (8.8.8.8), and DNS resolution, exporting a timestamped report.
 #>
 
-$Timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm"
-$OutputPath = "$env:USERPROFILE\Desktop\IT_Diagnostics_$env:COMPUTERNAME`_$Timestamp.txt"
+param(
+    [string]$OutputPath = "$env:USERPROFILE\Desktop\IT_Diagnostics_$($env:COMPUTERNAME)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm').txt"
+)
 
 $OS = Get-CimInstance Win32_OperatingSystem
 $Uptime = (Get-Date) - $OS.LastBootUpTime
+$DriveC = Get-PSDrive -Name C -ErrorAction SilentlyContinue
 $NetConfig = Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null }
 $Gateway = $NetConfig.IPv4DefaultGateway.NextHop
 
@@ -23,6 +25,13 @@ $Report += "Hostname:    $env:COMPUTERNAME"
 $Report += "User:        $env:USERNAME"
 $Report += "OS Version:  $($OS.Caption) ($($OS.Version))"
 $Report += "Uptime:      $($Uptime.Days)d $($Uptime.Hours)h $($Uptime.Minutes)m"
+if ($DriveC) {
+    $FreeGB  = [math]::Round($DriveC.Free / 1GB, 1)
+    $TotalGB = [math]::Round(($DriveC.Used + $DriveC.Free) / 1GB, 1)
+    $Report += "C: Storage:  $FreeGB GB free of $TotalGB GB"
+} else {
+    $Report += "C: Storage:  Unavailable"
+}
 $Report += ""
 $Report += "--- NETWORK CONFIGURATION ---"
 $Report += "Adapter:     $($NetConfig.InterfaceAlias)"
@@ -55,6 +64,7 @@ foreach ($Proc in $TopProcs) {
     $MemMB = [math]::Round($Proc.WorkingSet64 / 1MB, 1)
     $Report += "$($Proc.ProcessName) - $MemMB MB"
 }
+
 $OutputDir = Split-Path -Path $OutputPath -Parent
 if (-not (Test-Path -Path $OutputDir)) {
     New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
