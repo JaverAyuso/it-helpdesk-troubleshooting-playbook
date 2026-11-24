@@ -14,6 +14,19 @@ A structured collection of Standard Operating Procedures (SOPs) and step-by-step
 | [06 - AD Account Lockout SOP](06-active-directory-account-lockout.md) | Identity & Access Management | AD/Entra unlock workflow, Credential Manager cleanup, repeat lockout isolation |
 | [Get-WorkstationDiagnostics.ps1](scripts/Get-WorkstationDiagnostics.ps1) | PowerShell Automation | Automated OS, uptime, IP/DNS check, and top memory process export script |
 
+## Quick Start: Workstation Diagnostics Script
+
+Run `scripts/Get-WorkstationDiagnostics.ps1` on any Windows workstation to generate a Tier 1 diagnostic snapshot (OS, uptime, `C:` storage, IP/gateway/DNS config, connectivity checks, and top 5 memory-consuming processes):
+
+```powershell
+cd "$env:USERPROFILE\Downloads"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+./Get-WorkstationDiagnostics.ps1
+Get-Content (Get-ChildItem "$env:USERPROFILE\Desktop\IT_Diagnostics_*.txt" | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
+```
+
+- **Full Step-by-Step Guide & Sample Report:** See [`scripts/TROUBLESHOOTING-SCRIPT-NOTES.md`](scripts/TROUBLESHOOTING-SCRIPT-NOTES.md)
+  
 ## Troubleshooting Methodology
 Every runbook in this repository follows a standard Tier 1 escalation workflow:
 1. **Verify & Reproduce:** Confirm the exact error message and scope (single user vs. department-wide).
