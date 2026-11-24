@@ -4,12 +4,15 @@ A structured collection of Standard Operating Procedures (SOPs) and step-by-step
 
 ## Repository Contents
 
-| Guide | Topic | Key Areas Covered |
+| Guide / Tool | Topic | Key Areas Covered |
 | :--- | :--- | :--- |
 | [01 - Network Connectivity](01-network-connectivity-troubleshooting.md) | Basic Network Diagnostics | `ipconfig`, `ping`, `nslookup`, DNS cache, physical link checks |
 | [02 - Browser & Teams Fixes](02-browser-and-teams-session-fixes.md) | Web Apps & Collaboration | Cache/cookie corruption, incognito isolation, Microsoft Teams login loops |
 | [03 - Printers & Projectors](03-printer-and-projector-troubleshooting.md) | Office & Classroom Hardware | Print spooler resets, driver/queue clearing, display projection modes |
 | [04 - User Onboarding Checklist](04-new-hire-onboarding-checklist.md) | Account & Workstation Setup | Account provisioning, MFA setup, software baseline, access verification |
+| [05 - Ticket Triage & SLA Matrix](05-ticket-triage-and-escalation-matrix.md) | Service Desk Operations | P1–P4 severity classification, structured ticket notes, Tier 2 handoff rules |
+| [06 - AD Account Lockout SOP](06-active-directory-account-lockout.md) | Identity & Access Management | AD/Entra unlock workflow, Credential Manager cleanup, repeat lockout isolation |
+| [Get-WorkstationDiagnostics.ps1](scripts/Get-WorkstationDiagnostics.ps1) | PowerShell Automation | Automated OS, uptime, IP/DNS check, and top memory process export script |
 
 ## Troubleshooting Methodology
 Every runbook in this repository follows a standard Tier 1 escalation workflow:
