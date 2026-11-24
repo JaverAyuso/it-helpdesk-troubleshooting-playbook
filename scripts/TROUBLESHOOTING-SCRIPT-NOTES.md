@@ -1,12 +1,12 @@
 # Complete Guide: Running, Reading & Troubleshooting `Get-WorkstationDiagnostics.ps1`
 
-This guide explains how to download `Get-WorkstationDiagnostics.ps1`, run it in Windows PowerShell, understand every command, flag, and symbol, fix every error encountered, read the report, and use Markdown on GitHub.
+This guide explains how to download `Get-WorkstationDiagnostics.ps1`, run it in Windows PowerShell, understand every command, flag, and symbol, fix every error encountered, read the report, and use.
 
 ---
 
 ## 1. Download the Actual Script File
 
-* **Mistake to avoid:** Clicking the copy button on a commit header or file path copies text like `scripts/Get-WorkstationDiagnostics.ps1`, not the PowerShell code inside the file.
+* **Simple Mistake to avoid:** Clicking the copy button on a commit header or file path copies text like `scripts/Get-WorkstationDiagnostics.ps1`, not the PowerShell code inside the file.
 * **Steps:**
   1. Open `scripts/Get-WorkstationDiagnostics.ps1` in GitHub.
   2. Click **Download raw file** (the downward-arrow icon at the top right of the code viewer) so `Get-WorkstationDiagnostics.ps1` saves to your `Downloads` folder.
@@ -32,6 +32,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 * `Set-ExecutionPolicy` — A PowerShell cmdlet that controls whether scripts are allowed to run and under what safety rules.
 * `-Scope Process` — A parameter/flag limiting the change to **only this current PowerShell window/session**. Once you close that window, it resets automatically.
 * `-ExecutionPolicy Bypass` — Tells PowerShell not to block scripts with execution policy restrictions for that scope.
+* Because we used -Scope Process when running Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass, that bypass only applies to that single PowerShell window and disappears automatically as soon as you close the window or exit the session
 * `[Y] Yes [A] Yes to All [N] No ...` — Confirmation prompt asking if you want to apply the execution policy change. Type `Y` and press **Enter** before running the script.
 * `.\` (Dot-Slash) — Explicitly tells PowerShell to run a script located in your **current directory** (`.` = current folder, `\` = path separator). PowerShell requires `.\` before a local script name so scripts don't run accidentally from the current folder.
 * `.ps1` — File extension for a PowerShell script file.
@@ -41,10 +42,10 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ## 3. Errors Encountered & How to Fix Them
 
 ### Error 1: `The term './Get-WorkstationDiagnostics.ps1' is not recognized...` or `scripts/Get-WorkstationDiagnostics.ps1` not found
-* **Why it happens:** PowerShell is still in a folder like `C:\WINDOWS\system32` or the file is not in that folder yet.
+* **Why it may happen:** PowerShell is still in a folder like `C:\WINDOWS\system32` or the file is not in that folder yet.
 * **Fix:** Move into the folder containing the script (`cd $HOME\Downloads`), then run `.\Get-WorkstationDiagnostics.ps1`.
 
-### Error 2: Misspelled Commands (`CommandNotFoundException`, e.g., `Set-excecutionpolicy`)
+### Error 2: Common Misspelled Commands, something as simple as a missing capital letter from the command can cause errors: (`CommandNotFoundException`, e.g., `Set-excecutionpolicy`)
 * **Why it happens:** A command name or parameter has a typo, so PowerShell cannot find a matching cmdlet or program.
 * **Fix:** Check spelling (`Set-ExecutionPolicy`), or type the first few letters and press **Tab** to auto-complete.
 
