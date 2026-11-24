@@ -8,6 +8,7 @@ Hostname:   WORKSTATION-01
 User:       helpdesk-user
 OS Version: Microsoft Windows 11 Pro (10.0.26200)
 Uptime:     1d 20h 57m
+C: Storage: 142.6 GB free of 475.0 GB
 
 --- NETWORK CONFIGURATION ---
 Adapter:    Wi-Fi
@@ -30,6 +31,7 @@ code-editor  - 310.2 MB
 
 This guide explains how to download `Get-WorkstationDiagnostics.ps1`, run it in Windows PowerShell on any computer, view the generated report using a universal wildcard command, understand every command and symbol, and resolve common errors.
 
+---
 
 ## 1. Download the Actual Script File
 
@@ -46,7 +48,7 @@ Open **Windows PowerShell** and run the following commands one by one:
 
 ### Step-by-Step Commands for Any Windows PC
 
-1. Move into your `Downloads` folder:
+1. Move into your `Downloads` folder by using the following command:
    ```powershell
    cd "$env:USERPROFILE\Downloads"
    ```
@@ -59,6 +61,7 @@ Open **Windows PowerShell** and run the following commands one by one:
    ```powershell
    ./Get-WorkstationDiagnostics.ps1
    ```
+   *(Optional custom save path: `./Get-WorkstationDiagnostics.ps1 -OutputPath "D:\Support\report.txt"`)*
 4. Print the newest report directly in PowerShell on any computer:
    ```powershell
    Get-Content (Get-ChildItem "$env:USERPROFILE\Desktop\IT_Diagnostics_*.txt" | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
@@ -69,14 +72,7 @@ Open **Windows PowerShell** and run the following commands one by one:
 Earlier versions of these notes used example paths from a specific machine and username (such as `C:\Users\ayuso\Desktop\IT_Diagnostics_ROG_...txt`). Because every computer has a different logged-in user, hostname, and timestamp, hardcoding a path only works on one machine.
 
 Instead, the current workflow uses:
-- **`$env:USERPROFILE`** to resolve the active user's profile folder automatically on any Windows PC.
-- **A wildcard (`*`)** with `Get-Content` so PowerShell finds the generated report regardless of computer name or timestamp.
-
----
-
-## Command, Flag & Symbol Reference
-
-- `cd "$env:USERPROFILE\Downloads"` — **Change Directory**. Moves your active terminal path into the current user's `Downloads` folder.
+- **`$env:USERPROFILE`** to resolve the active user's profile folder automatically on any Windows PC. - **A wildcard (`*`)** with `Get-Content` so PowerShell finds the generated report regardless of computer name or timestamp.  ---  ## Command, Flag & Symbol Reference  - `cd "$env:USERPROFILE\Downloads"` — **Change Directory**. Moves your active terminal path into the current user's `Downloads` folder.
 - `$env:USERPROFILE` — Reads the Windows `USERPROFILE` environment variable (for example, `C:\Users\<Username>`), making paths portable across different user accounts. - `$HOME` / `~` — Built-in PowerShell variable and shorthand symbol that also reference your user profile directory.
 - `\` and `/` — Path separators in Windows/PowerShell. Use a slash after `.` (`.\` or `./`) when running a script in the current directory.
 - `Set-ExecutionPolicy` — PowerShell cmdlet that controls script execution rules.
@@ -84,6 +80,7 @@ Instead, the current workflow uses:
 - `-ExecutionPolicy Bypass` — Temporarily skips execution policy blocks for the chosen scope.
 - `[Y] Yes [A] Yes to All [N] No ...` — Confirmation prompt for changing execution policy. Reply `Y` and press **Enter** before running the script.
 - `./Get-WorkstationDiagnostics.ps1` (or `.\Get-WorkstationDiagnostics.ps1`) — Runs the `.ps1` PowerShell script located in your current folder.
+- `-OutputPath` — Optional script parameter to override the default Desktop report path.
 - `*` (Wildcard) — Matches any characters in a filename (`IT_Diagnostics_*.txt` matches any hostname and date/time suffix).
 - `Get-Content` — Reads and prints file contents in the PowerShell console.
 - `Get-ChildItem ... | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName` — Finds matching report files on the user's Desktop, sorts newest first, selects the top result, and passes its full file path to `Get-Content`.
@@ -92,12 +89,13 @@ Instead, the current workflow uses:
 
 ## How the Script Works
 
-1. **System & Network Info:** Collects timestamp, hostname, username, OS version, uptime, network adapter alias, IPv4 address, default gateway, and DNS servers into `$Report`.
+1. **System & Network Info:** Collects timestamp, hostname, username, OS version, uptime, `C:` drive storage (`Get-PSDrive -Name C`), network adapter alias, IPv4 address, default gateway, and DNS servers into `$Report`.
 2. **Connectivity Tests:**
    - **Gateway Ping:** Tests reachability to the local default gateway (`Test-Connection`).
    - **External Ping:** Tests reachability to `8.8.8.8`.
    - **DNS Resolution:** Tests domain name resolution (`Resolve-DnsName` for `google.com`) inside a `try / catch` block.
-3. **Top 5 Memory-Consuming Processes:** Queries `Get-Process`, sorts by `WorkingSet64` descending (`| Sort-Object WorkingSet64 -Descending`), takes the top 5 (`| Select-Object -First 5`), converts bytes to megabytes (`WorkingSet64 / 1MB`), and appends each entry to `$Report` using `+=`. 4. **Automatic Directory Guard & Save:** Uses `Split-Path -Path $OutputPath -Parent` and `Test-Path` to check if the destination folder exists, runs `New-Item -ItemType Directory -Force | Out-Null` if missing, and writes `$Report` with `Out-File -FilePath $OutputPath -Encoding UTF8`.
+3. **Top 5 Memory-Consuming Processes:** Queries `Get-Process`, sorts by `WorkingSet64` descending (`| Sort-Object WorkingSet64 -Descending`), takes the top 5 (`| Select-Object -First 5`), converts bytes to megabytes (`WorkingSet64 / 1MB`), and appends each entry to `$Report` using `+=`.
+4. **Automatic Directory Guard & Save:** Supports an optional `-OutputPath` parameter (defaulting to the current user's Desktop), uses `Split-Path`, `Test-Path`, and `New-Item -ItemType Directory -Force` to create missing folders automatically, and writes `$Report` with `Out-File -FilePath $OutputPath -Encoding UTF8`.
 
 ---
 
